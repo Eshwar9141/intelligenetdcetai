@@ -31,20 +31,13 @@ def create_app():
     CORS(app)
 
     # ---------------- API BLUEPRINTS ----------------
-    # These are BACKEND APIs (NOT pages)
-# ---------------- API BLUEPRINTS ----------------
-# ---------------- API BLUEPRINTS ----------------
-
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(quiz_bp, url_prefix="/quiz")
 
-# ✅ These blueprints already define their own prefixes
+    # These already include prefixes
     app.register_blueprint(student_bp)    # /students/*
     app.register_blueprint(subject_bp)    # /subjects/*
-
-# Admin APIs
     app.register_blueprint(admin_bp, url_prefix="/admin")
-
 
     # ---------------- FRONTEND PAGES ----------------
     @app.route("/")
@@ -75,7 +68,6 @@ def create_app():
     def serve_admin_login():
         return send_from_directory("frontend/pages", "admin-login.html")
 
-    # ✅ THIS IS THE ADMIN DASHBOARD PAGE
     @app.route("/admin")
     def serve_admin_dashboard():
         return send_from_directory("frontend/pages", "admin.html")
@@ -105,9 +97,13 @@ def create_app():
 
 
 # ---------------- ENTRY POINT ----------------
-if __name__ == "__main__":
+app = create_app()
+
+# Initialize DB once (safe for Railway)
+with app.app_context():
     init_db()
     seed_initial_data()
 
-    app = create_app()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
