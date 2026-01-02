@@ -1,8 +1,0 @@
-[phases.build]
-nixpacksCommands = [
-  "mv Project/* . || true",
-  "pip install -r Project/requirements.txt"
-]
-
-[start]
-cmd = "gunicorn Project.app:app"
